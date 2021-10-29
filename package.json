@@ -1,0 +1,30 @@
+{
+  "name": "musicuploader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node index.ts",
+    "stop": "pkill --signal SIGINT musicUploader"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/mkdirp": "^1.0.2",
+    "@types/nconf": "^0.10.1",
+    "@types/node": "^16.4.8",
+    "@types/sqlite3": "^3.1.7",
+    "@types/ws": "^7.4.7",
+    "ts-node": "^10.1.0",
+    "typescript": "^4.3.5"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "mkdirp": "^1.0.4",
+    "music-metadata": "^7.11.0",
+    "nconf": "^0.11.3",
+    "sqlite3": "^5.0.2",
+    "ws": "^8.0.0"
+  }
+}
