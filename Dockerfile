@@ -1,5 +1,5 @@
 FROM node:latest
-RUN apt update && apt install -y python
+RUN apt-get update && apt-get install -y python
 RUN npm install --global npm
 RUN npm install --global pnpm
 COPY package.json /package.json
