@@ -1,7 +1,7 @@
 FROM node:latest
 RUN apt-get update && apt-get install -y python
-RUN npm install --global npm
-RUN npm install --global pnpm
+RUN npm install --global --silent npm@latest
+RUN npm install --global --silent pnpm
 COPY package.json /package.json
 COPY pnpm-lock.yaml /pnpm-lock.yaml
 RUN pnpm install
