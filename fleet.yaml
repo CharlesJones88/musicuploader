@@ -1,0 +1,10 @@
+namespace: music-uploader-helm
+helm:
+  releaseName: musicuploader
+  chart: 'bitbucket.org/charlesjones88/musicuploader'
+  repo: ''
+  version: 'master'
+  force: false
+  timeoutSeconds: 0
+  values:
+    replicaCount: 1
