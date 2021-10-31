@@ -47,8 +47,8 @@ pipelines:
             - IMAGE_NAME=$BITBUCKET_REPO_SLUG
             - docker load --input "${IMAGE_NAME}.tar"
             - VERSION="prod-0.1.${BITBUCKET_BUILD_NUMBER}"
-            - IMAGE=${DOCKERHUB_NAMESPACE}/${IMAGE_NAME}
-            - docker tag "${IMAGE_NAME}" "${DOCKERHUB_USERNAME}/musicuploader:${VERSION}"
-            - docker push "${DOCKERHUB_USERNAME}/musicuploader:${VERSION}"
+            - IMAGE=${DOCKERHUB_USERNAME}/${IMAGE_NAME}
+            - docker tag "${IMAGE_NAME}" "${IMAGE}:${VERSION}"
+            - docker push "${IMAGE}:${VERSION}"
           services:
             - docker
