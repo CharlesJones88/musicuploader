@@ -18,6 +18,21 @@ node {
       app.push("latest")
     }
   }
+  stage('Clone Chart Repo') {
+    sh "git clone ${env.CHART_REPO}"
+  }
+  stage('Update chart repo version') {
+    environment {
+      valuesData = ''
+      chartData = ''
+    }
+    sh "ls -altroh"
+    valuesData = readYaml(file:currentvaluesFile)
+    sh "echo $valuesData"
+    valuesData.image.tag = "${env.BUILD_NUMBER}"
+    sh "rm ${currentvaluesFile}"
+    writeYaml(file:currentvaluesFile, data:valuesData)
+  }
   stage('Deploy') {
     echo 'Sending deployment request to Kubernetes...'
   }
