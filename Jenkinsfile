@@ -19,7 +19,9 @@ node {
     }
   }
   stage('Clone Chart Repo') {
-    sh "git clone ${env.CHART_REPO}"
+    sshagent (credentials: ["${env.git}"]) {
+      sh "git clone ${env.CHART_REPO}"
+    }
   }
   stage('Deploy') {
     environment {
