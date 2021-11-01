@@ -4,7 +4,11 @@
 
 replicaCount: 1
 
-image: ultramixerman/musicuploader
+image:
+  repository: ultramixerman/musicuploader
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
 
 imagePullSecrets: 
 - name: docker
