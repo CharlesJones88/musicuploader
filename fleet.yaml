@@ -1,7 +1,7 @@
 namespace: helm
 helm:
   releaseName: musicuploader
-  chart: 'https://github.com/CharlesJones88/musicuploader'
+  chart: 'github.com/CharlesJones88/musicuploader'
   repo: ''
   version: 'master'
   force: false
