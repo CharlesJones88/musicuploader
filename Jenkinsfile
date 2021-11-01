@@ -39,10 +39,10 @@ node {
     chartData.appVersion = "${env.BUILD_NUMBER}"
     sh "rm ${helmFolder}/Chart.yaml"
     writeYaml(file:"${helmFolder}/Chart.yaml", data:chartData)
-    sh "rm -rf music-uploader-fleet"
+    
     
     sshagent (credentials: ["${env.git}"]) {
-      sh("cd music-upload-fleet && git add . && git commit -m 'Jenkins: bump docker image version to ${env.BUILD_NUMBER}' && git push -u origin main")
+      sh("cd music-upload-fleet && git add . && git commit -m 'Jenkins: bump docker image version to ${env.BUILD_NUMBER}' && git push -u origin main && cd .. && rm -rf music-uploader-fleet")
     } 
   }
   stage('Cleanup') {
