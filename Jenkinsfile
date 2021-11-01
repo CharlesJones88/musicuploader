@@ -19,6 +19,7 @@ node {
     }
   }
   stage('Clone Chart Repo') {
+    sh "whoami"
     sshagent (credentials: ["${env.git}"]) {
       sh "git clone ${env.CHART_REPO}"
     }
@@ -30,13 +31,11 @@ node {
     }
     helmFolder = 'music-uploader-fleet/music-uploader'
     valuesData = readYaml(file:"${helmFolder}/values.yaml")
-    sh "echo $valuesData"
     valuesData.image.tag = "${env.BUILD_NUMBER}"
     sh "rm ${helmFolder}/values.yaml"
     writeYaml(file:"${helmFolder}/values.yaml", data:valuesData)
     
     chartData = readYaml(file:"${helmFolder}/Chart.yaml")
-    sh "echo $chartData"
     chartData.version = env.BUILD_NUMBER
     chartData.appVersion = "${env.BUILD_NUMBER}"
     sh "rm ${helmFolder}/Chart.yaml"
