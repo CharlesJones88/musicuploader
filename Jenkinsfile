@@ -31,7 +31,15 @@ node {
     valuesData.image.tag = "${env.BUILD_NUMBER}"
     writeYaml(file:'music-uploader-fleet/music-uploader/values.yaml', data:valuesData)
     
+    chartData = readYaml(file:'music-uploader-fleet/music-uploader/Chart.yaml')
+    sh "echo $chartData"
+    chartData.version = env.BUILD_NUMBER
+    chartData.appVersion = "${env.BUILD_NUMBER}"
+    writeYaml(file:'music-uploader-fleet/music-uploader/Chart.yaml', data:chartData)
     
+    sshagent (credentials ["${env.git}"]) {
+      sh("cd music-upload-fleet && git add . && git commit -m 'Jenkins: bump docker image version to ${env.BUILD_NUMBER}' && git push -u origin main")
+    }
   }
   stage('Deploy') {
     echo 'Sending deployment request to Kubernetes...'
