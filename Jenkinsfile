@@ -21,7 +21,7 @@ node {
   stage('Clone Chart Repo') {
     sh "git clone ${env.CHART_REPO}"
   }
-  stage('Update chart repo version') {
+  stage('Deploy') {
     environment {
       valuesData = ''
       chartData = ''
@@ -43,11 +43,7 @@ node {
     
     sshagent (credentials: ["${env.git}"]) {
       sh("cd music-upload-fleet && git add . && git commit -m 'Jenkins: bump docker image version to ${env.BUILD_NUMBER}' && git push -u origin main")
-    }
-    
-  }
-  stage('Deploy') {
-    echo 'Sending deployment request to Kubernetes...'
+    } 
   }
   stage('Cleanup') {
     sh "docker rmi ${env.IMAGE_NAME}:${env.BUILD_NUMBER}"
