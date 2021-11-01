@@ -9,11 +9,11 @@ node {
   }
   
   stage('Build image') {
-    app = docker.build(imageName)
+    app = docker.build(env.IMAGE_NAME)
   }
   
   stage('Push image') {
-    docker.withRegistry('', registryCredentialSet) {
+    docker.withRegistry('', env.registryCredentialSet) {
       app.push("${env.BUILD_NUMBER}")
       app.push("latest")
     }
@@ -25,7 +25,7 @@ node {
   }
   stage('Cleanup') {
     steps {
-      sh "docker rmi ${imageName}:${env.BUILD_NUMBER}"
+      sh "docker rmi ${env.IMAGE_NAME}:${env.BUILD_NUMBER}"
     }
   }
 }
