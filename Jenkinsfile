@@ -1,5 +1,9 @@
 node {
   def app
+  environment {
+    imageName = 'ultramixerman/musicuploader'
+    registryCredentialSet = 'dockerhub'
+  }
   stage('Clone repository') {
     checkout scm
   }
@@ -19,8 +23,9 @@ node {
       echo 'Sending deployment request to Kubernetes...'
     }
   }
-  environment {
-    imageName = 'ultramixerman/musicuploader'
-    registryCredentialSet = 'dockerhub'
+  stage('Cleanup') {
+    steps {
+      sh "docker rmi ${imageName}:${env.BUILD_NUMBER}"
+    }
   }
 }
