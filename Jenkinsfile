@@ -26,12 +26,12 @@ node {
       valuesData = ''
       chartData = ''
     }
-    sh "ls -altroh"
-    valuesData = readYaml(file:currentvaluesFile)
+    valuesData = readYaml(file:'music-uploader-fleet/music-uploader/values.yaml')
     sh "echo $valuesData"
     valuesData.image.tag = "${env.BUILD_NUMBER}"
-    sh "rm ${currentvaluesFile}"
-    writeYaml(file:currentvaluesFile, data:valuesData)
+    writeYaml(file:'music-uploader-fleet/music-uploader/values.yaml', data:valuesData)
+    
+    
   }
   stage('Deploy') {
     echo 'Sending deployment request to Kubernetes...'
