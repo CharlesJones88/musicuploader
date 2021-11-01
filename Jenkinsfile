@@ -19,13 +19,9 @@ node {
     }
   }
   stage('Deploy') {
-    steps {
-      echo 'Sending deployment request to Kubernetes...'
-    }
+    echo 'Sending deployment request to Kubernetes...'
   }
   stage('Cleanup') {
-    steps {
-      sh "docker rmi ${env.IMAGE_NAME}:${env.BUILD_NUMBER}"
-    }
+    sh "docker rmi ${env.IMAGE_NAME}:${env.BUILD_NUMBER}"
   }
 }
