@@ -1,5 +1,6 @@
 namespace: music-uploader-helm
 helm:
+  helmSecretName: gitrepo-auth-775dd
   releaseName: musicuploader
   chart: 'https://bitbucket.org/charlesjones88/musicuploader'
   repo: ''
