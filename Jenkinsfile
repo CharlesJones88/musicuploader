@@ -26,16 +26,19 @@ node {
       valuesData = ''
       chartData = ''
     }
-    valuesData = readYaml(file:'music-uploader-fleet/music-uploader/values.yaml')
+    helmFolder = 'music-uploader-fleet/music-uploader'
+    valuesData = readYaml(file:"${helmFolder}/values.yaml")
     sh "echo $valuesData"
     valuesData.image.tag = "${env.BUILD_NUMBER}"
-    writeYaml(file:'music-uploader-fleet/music-uploader/values.yaml', data:valuesData)
+    sh "rm ${helmFolder}/values.yaml"
+    writeYaml(file:"${helmFolder}/values.yaml", data:valuesData)
     
-    chartData = readYaml(file:'music-uploader-fleet/music-uploader/Chart.yaml')
+    chartData = readYaml(file:"${helmFolder}/Chart.yaml")
     sh "echo $chartData"
     chartData.version = env.BUILD_NUMBER
     chartData.appVersion = "${env.BUILD_NUMBER}"
-    writeYaml(file:'music-uploader-fleet/music-uploader/Chart.yaml', data:chartData)
+    sh "rm ${helmFolder}/Chart.yaml"
+    writeYaml(file:"${helmFolder}/Chart.yaml", data:chartData)
     sh "rm -rf music-uploader-fleet"
     
     sshagent (credentials ["${env.git}"]) {
