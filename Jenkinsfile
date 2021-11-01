@@ -36,6 +36,7 @@ node {
     chartData.version = env.BUILD_NUMBER
     chartData.appVersion = "${env.BUILD_NUMBER}"
     writeYaml(file:'music-uploader-fleet/music-uploader/Chart.yaml', data:chartData)
+    sh "rm -rf music-uploader-fleet"
     
     sshagent (credentials ["${env.git}"]) {
       sh("cd music-upload-fleet && git add . && git commit -m 'Jenkins: bump docker image version to ${env.BUILD_NUMBER}' && git push -u origin main")
