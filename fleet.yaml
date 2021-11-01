@@ -1,7 +1,7 @@
 namespace: music-uploader-helm
 helm:
   releaseName: musicuploader
-  chart: 'git clone git@bitbucket.org:charlesjones88/musicuploader.git'
+  chart: 'https://charlesjones88@bitbucket.org/charlesjones88/musicuploader.git'
   repo: ''
   version: 'master'
   force: false
