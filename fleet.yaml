@@ -1,4 +1,4 @@
-namespace: helm
+namespace: music-uploader
 helm:
   releaseName: musicuploader
   chart: 'github.com/CharlesJones88/musicuploader'
