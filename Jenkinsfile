@@ -44,11 +44,13 @@ node {
     
     sshagent (["git"]) {
       sh "ls"
-      sh("cd music-uploader-fleet && git add . && git commit -m 'Jenkins: bump docker image version to ${env.BUILD_NUMBER}' && git push -u origin main && cd .. && rm -rf music-uploader-fleet")
+      sh("cd music-uploader-fleet && git add . && git commit -m 'Jenkins: bump docker image version to ${env.BUILD_NUMBER}' && git push -u origin main")
     } 
   }
   
   stage('Cleanup') {
+    sh "pwd"
+    sh "rm -rf music-uploader-fleet"
     sh "docker rmi ${env.IMAGE_NAME}:${env.BUILD_NUMBER}"
   }
 }
