@@ -20,7 +20,7 @@ node {
   }
   stage('Clone Chart Repo') {
     sh "whoami"
-    sshagent (credentials: ["${env.git}"]) {
+    sshagent (["git"]) {
       sh "git clone ${env.CHART_REPO}"
     }
   }
@@ -41,7 +41,7 @@ node {
     sh "rm ${helmFolder}/Chart.yaml"
     writeYaml(file:"${helmFolder}/Chart.yaml", data:chartData)
     
-    sshagent (credentials: ["${env.git}"]) {
+    sshagent (["git"]) {
       sh "ls"
       sh("cd music-uploader-fleet && git add . && git commit -m 'Jenkins: bump docker image version to ${env.BUILD_NUMBER}' && git push -u origin main && cd .. && rm -rf music-uploader-fleet")
     } 
