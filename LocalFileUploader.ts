@@ -1,9 +1,14 @@
 import fs from 'fs';
 import path from 'path';
 import * as mm from 'music-metadata';
-import {connect, createSongsTable, getAllSongs, insertSong} from './db';
+import {
+  connect,
+  createSongsTable,
+  getSongCount,
+  insertSong,
+} from './db';
 import {createHashingString, getHash} from './Utils';
-import {DB_FILE, Song} from './types';
+import {DB_FILE} from './types';
 
 export const initDB = async (currentPath: string): Promise<void> => {
   if (fs.existsSync(DB_FILE)) {
@@ -14,8 +19,9 @@ export const initDB = async (currentPath: string): Promise<void> => {
   connect();
   await createSongsTable();
   try {
-    const songs: Array<Song> = await getAllSongs();
-    if (songs.length === 0) {
+    const songCount: number = await getSongCount();
+    console.log(`Songs in db ${songCount}`);
+    if (songCount === 0) {
       await addFilesToDB(currentPath);
     }
   } catch {

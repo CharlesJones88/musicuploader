@@ -74,6 +74,9 @@ export const getSong = async (hash: string): Promise<Song> =>
     },
   );
 
+export const getSongCount = async (): Promise<number> =>
+  await getAsync(`SELECT COUNT(hash) FROM songs`);
+
 export const getAllSongs = async (): Promise<Array<Song>> =>
   await allAsync('SELECT hash, title, artist, album FROM songs');
 
