@@ -26,7 +26,8 @@ router.post('/file', (req: express.Request, _, next: express.NextFunction) => {
     await deleteSong(hash);
     next();
   });
-  req.on('end', async () => {
+  
+  req.on('close', async () => {
     console.log(`Successfully uploaded file ${fileName}`);
     await insertSong(hash, title as string, artist as string, album as string);
     next();
