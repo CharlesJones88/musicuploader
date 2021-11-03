@@ -34,7 +34,7 @@ const addFilesToDB = async (currentPath: string) => {
     const file: string = path.resolve(currentPath, discoveredFile);
     const stat: fs.Stats = fs.statSync(file);
     if (stat?.isDirectory()) {
-      await initDB(file);
+      await addFilesToDB(file);
     } else if (path.extname(discoveredFile).match(/\.(mp4|m4a|mp3)$/)) {
       const metadata: mm.IAudioMetadata = await mm.parseFile(file);
       const {title, artist, album} = metadata.common;
