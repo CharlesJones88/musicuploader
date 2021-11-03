@@ -1,11 +1,15 @@
 import express from 'express';
 import mkdirp from 'mkdirp';
 import {createWriteStream} from 'fs';
-import {insertSong} from './db';
+import { insertSong, connect, getAllSongs } from './db';
 import {basePath} from './types';
 import {createHashingString, getHash} from './Utils';
 
 const router: express.Router = express.Router();
+
+router.get('/songs', async (_, res: express.Response) => 
+  res.send(await getAllSongs())
+);
 
 router.post('/file', (req: express.Request, _, next: express.NextFunction) => {
   const {title, artist, album, fileName} = req.query;
