@@ -7,8 +7,11 @@ import { createHashingString, getHash } from "./Utils";
 import { DB_FILE } from "./types";
 
 export const addLocalMusicFilesToDB = async (currentPath: string) => {
-  fs.unlinkSync(DB_FILE);
-  fs.closeSync(fs.openSync(DB_FILE, 'w'));
+  if (fs.existsSync(DB_FILE)) {
+    fs.unlinkSync(DB_FILE);
+    fs.closeSync(fs.openSync(DB_FILE, 'w'));
+  }
+
   connect();
   await createSongsTable();
   for await (const discoveredFile of fs.readdirSync(currentPath)) {
