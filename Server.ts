@@ -1,9 +1,9 @@
-import WebSocket from "ws";
-import express from "express";
-import { basePath, Song } from "./types";
-import { router } from "./Routes";
-import { getSongsByTitle } from "./db";
-import { initDB } from "./LocalFileUploader";
+import WebSocket from 'ws';
+import express from 'express';
+import {basePath, Song} from './types';
+import {router} from './Routes';
+import {getSongsByTitle} from './db';
+import {initDB} from './LocalFileUploader';
 
 export const runFileServer = {
   start: (): void => {
@@ -11,12 +11,12 @@ export const runFileServer = {
       port: 8222,
     });
 
-    wss.on("connection", (ws: WebSocket) => {
-      console.log("Client connected, waiting for message.");
-      ws.on("message", async (message: WebSocket.Data) => {
+    wss.on('connection', (ws: WebSocket) => {
+      console.log('Client connected, waiting for message.');
+      ws.on('message', async (message: WebSocket.Data) => {
         console.log(`Getting list of songs that aren't on server`);
         const songsToSend: Array<string> = await getFilesToSend(
-          JSON.parse(message.toString())
+          JSON.parse(message.toString()),
         );
         console.log(`${(songsToSend ?? []).length} songs missing from server`);
         ws.send(JSON.stringify(songsToSend ?? []));
@@ -24,14 +24,14 @@ export const runFileServer = {
     });
 
     const getFilesToSend = async (
-      songsRequest: Array<string>
+      songsRequest: Array<string>,
     ): Promise<Array<string>> => {
       await initDB(basePath);
       const filteredTitles: Array<Song> = await getSongsByTitle(songsRequest);
 
       return songsRequest.filter(
         (song: string) =>
-          filteredTitles.find(({ title }: Song) => song === title) == void 0
+          filteredTitles.find(({title}: Song) => song === title) == void 0,
       );
     };
 
