@@ -1,10 +1,9 @@
 import WebSocket from "ws";
-import { existsSync } from "fs";
 import express from "express";
-import { basePath, DB_FILE, Song } from "./types";
+import { basePath, Song } from "./types";
 import { router } from "./Routes";
 import { getSongsByTitle } from "./db";
-import { addLocalMusicFilesToDB } from "./LocalFileUploader";
+import { initDB } from "./LocalFileUploader";
 
 export const runFileServer = {
   start: (): void => {
@@ -27,6 +26,7 @@ export const runFileServer = {
     const getFilesToSend = async (
       songsRequest: Array<string>
     ): Promise<Array<string>> => {
+      await initDB(basePath);
       const filteredTitles: Array<Song> = await getSongsByTitle(songsRequest);
 
       return songsRequest.filter(
