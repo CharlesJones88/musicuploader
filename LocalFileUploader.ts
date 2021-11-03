@@ -23,11 +23,6 @@ const getCount = async (): Promise<number | null> => {
 };
 
 export const initDB = async (currentPath: string): Promise<void> => {
-  if (fs.existsSync(DB_FILE)) {
-    fs.unlinkSync(DB_FILE);
-    fs.closeSync(fs.openSync(DB_FILE, 'w'));
-  }
-
   connect();
   await createSongsTable();
   const songs = await getAllSongs();
