@@ -10,6 +10,17 @@ import {
 import {createHashingString, getHash} from './Utils';
 import {DB_FILE} from './types';
 
+const getCount = async (): Promise<number> => {
+  try {
+    const songCount: number = await getSongCount();
+    console.log(`Songs in db`, songCount);
+    return songCount;
+  } catch (err) {
+    console.error('Error getting song count', err);
+    return void 0;
+  }
+};
+
 export const initDB = async (currentPath: string): Promise<void> => {
   if (fs.existsSync(DB_FILE)) {
     fs.unlinkSync(DB_FILE);
@@ -18,14 +29,7 @@ export const initDB = async (currentPath: string): Promise<void> => {
 
   connect();
   await createSongsTable();
-  let songCount: number;
-  try {
-    songCount = await getSongCount();
-    console.log(`Songs in db`, songCount);
-  } catch (err) {
-    console.error('Error getting song count', err);
-  }
-
+  const songCount: number = await getCount();
   if (songCount == void 0 || songCount === 0) {
     await addFilesToDB(currentPath);
   }
