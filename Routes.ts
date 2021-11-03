@@ -1,18 +1,18 @@
 import express from 'express';
 import mkdirp from 'mkdirp';
-import {createWriteStream} from 'fs';
+import { createWriteStream } from 'fs';
 import { insertSong, getAllSongs, deleteSong } from './db';
-import {basePath} from './types';
-import {createHashingString, getHash} from './Utils';
+import { basePath } from './types';
+import { createHashingString, getHash } from './Utils';
 
 const router: express.Router = express.Router();
 
-router.get('/songs', async (_, res: express.Response) => 
+router.get('/songs', async (_, res: express.Response) =>
   res.send(await getAllSongs())
 );
 
-router.post('/file', (req: express.Request, _, next: express.NextFunction) => {
-  const {title, artist, album, fileName} = req.query;
+router.post('/file', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  const { title, artist, album, fileName } = req.query;
   const hash: string = getHash(
     createHashingString(title as string, artist as string, album as string),
   );
@@ -26,8 +26,9 @@ router.post('/file', (req: express.Request, _, next: express.NextFunction) => {
     await deleteSong(hash);
     next();
   });
-  
+
   req.on('close', async () => {
+    res.end()
     console.log(`Successfully uploaded file ${fileName}`);
     await insertSong(hash, title as string, artist as string, album as string);
     next();
@@ -36,4 +37,4 @@ router.post('/file', (req: express.Request, _, next: express.NextFunction) => {
 
 router.get('/status', (_, res: express.Response) => res.send('SUCCESS'));
 
-export {router};
+export { router };
