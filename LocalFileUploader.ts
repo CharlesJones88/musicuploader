@@ -4,6 +4,7 @@ import * as mm from 'music-metadata';
 import {
   connect,
   createSongsTable,
+  getAllSongs,
   getSongCount,
   insertSong,
 } from './db';
@@ -29,6 +30,8 @@ export const initDB = async (currentPath: string): Promise<void> => {
 
   connect();
   await createSongsTable();
+  const songs = await getAllSongs();
+  console.log(songs.length);
   const songCount: number | null = await getCount();
   if (songCount == void 0 || songCount === 0) {
     await addFilesToDB(currentPath);

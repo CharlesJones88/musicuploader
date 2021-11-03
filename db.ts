@@ -75,7 +75,7 @@ export const getSong = async (hash: string): Promise<Song> =>
   );
 
 export const getSongCount = async (): Promise<number> => {
-  const res = await getAsync(`SELECT COUNT(*) AS 'count' FROM songs`);
+  const res = await getAsync(`SELECT COUNT(*) AS 'count' FROM 'songs'`);
   console.log(res);
   return res.count;
 };
