@@ -1,39 +1,46 @@
 import WebSocket from "ws";
+import { existsSync } from "fs";
 import express from "express";
-import { Song } from "./types";
+import { basePath, DB_FILE, Song } from "./types";
 import { router } from "./Routes";
 import { getSongsByTitle } from "./db";
+import { addLocalMusicFilesToDB } from "./LocalFileUploader";
 
-export const runFileServer = (): void => {
-  const wss: WebSocket.Server = new WebSocket.Server({
-    port: 8222,
-  });
-
-  wss.on("connection", (ws: WebSocket) => {
-    console.log('Client connected, waiting for message.');
-    ws.on("message", async (message: WebSocket.Data) => {
-      console.log(`Getting list of songs that aren't on server`);
-      const songsToSend: Array<string> = await getFilesToSend(
-        JSON.parse(message.toString())
-      );
-      console.log(`${(songsToSend ?? []).length} songs missing from server`);
-      ws.send(JSON.stringify(songsToSend ?? []));
+export const runFileServer = {
+  start: (): void => {
+    const wss: WebSocket.Server = new WebSocket.Server({
+      port: 8222,
     });
-  });
 
-  const getFilesToSend = async (
-    songsRequest: Array<string>
-  ): Promise<Array<string>> => {
-    const filteredTitles: Array<Song> = await getSongsByTitle(songsRequest);
+    wss.on("connection", (ws: WebSocket) => {
+      console.log("Client connected, waiting for message.");
+      ws.on("message", async (message: WebSocket.Data) => {
+        console.log(`Getting list of songs that aren't on server`);
+        const songsToSend: Array<string> = await getFilesToSend(
+          JSON.parse(message.toString())
+        );
+        console.log(`${(songsToSend ?? []).length} songs missing from server`);
+        ws.send(JSON.stringify(songsToSend ?? []));
+      });
+    });
 
-    return songsRequest.filter(
-      (song: string) =>
-        filteredTitles.find(({ title }: Song) => song === title) == void 0
-    );
-  };
+    const getFilesToSend = async (
+      songsRequest: Array<string>
+    ): Promise<Array<string>> => {
+      if (!existsSync(DB_FILE)) {
+        await addLocalMusicFilesToDB(basePath);
+      }
+      const filteredTitles: Array<Song> = await getSongsByTitle(songsRequest);
 
-  const PORT: number = 8200;
-  const app = express();
-  app.use(router);
-  app.listen(PORT, () => console.log(`Now listening on port ${PORT}`));
+      return songsRequest.filter(
+        (song: string) =>
+          filteredTitles.find(({ title }: Song) => song === title) == void 0
+      );
+    };
+
+    const PORT: number = 8200;
+    const app = express();
+    app.use(router);
+    app.listen(PORT, () => console.log(`Now listening on port ${PORT}`));
+  },
 };
