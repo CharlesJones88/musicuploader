@@ -18,13 +18,15 @@ export const initDB = async (currentPath: string): Promise<void> => {
 
   connect();
   await createSongsTable();
+  let songCount: number;
   try {
-    const songCount: number = await getSongCount();
+    songCount = await getSongCount();
     console.log(`Songs in db`, songCount);
-    if (songCount === 0) {
-      await addFilesToDB(currentPath);
-    }
-  } catch {
+  } catch (err) {
+    console.error('Error getting song count', err);
+  }
+
+  if (songCount == void 0 || songCount === 0) {
     await addFilesToDB(currentPath);
   }
 };
@@ -41,7 +43,7 @@ const addFilesToDB = async (currentPath: string) => {
       const hash = getHash(
         createHashingString(title as string, artist as string, album as string),
       );
-      console.log(`Inserting ${hash}\t${title}\t${artist}\t${album}`);
+      //console.log(`Inserting ${hash}\t${title}\t${artist}\t${album}`);
       await insertSong(
         hash,
         title as string,

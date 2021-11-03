@@ -1,7 +1,7 @@
 import express from 'express';
 import mkdirp from 'mkdirp';
 import {createWriteStream} from 'fs';
-import { insertSong, connect, getAllSongs } from './db';
+import { insertSong, getAllSongs } from './db';
 import {basePath} from './types';
 import {createHashingString, getHash} from './Utils';
 

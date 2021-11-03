@@ -30,7 +30,7 @@ export const runFileServer = {
 
       return songsRequest.filter(
         (song: string) =>
-          filteredTitles.find(({title}: Song) => song === title) == void 0,
+          filteredTitles.some(({title}: Song) => song === title),
       );
     };
 
