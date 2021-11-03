@@ -7,6 +7,6 @@ export const createHashingString = (
 ): string => `${title}:${artist}:${album}`;
 
 export const getHash = (data: string): string => {
-  const hash: crypto.Hash = crypto.createHash('sha1').update(data, 'utf-8');
-  return hash.digest('hex');
+  const hash: crypto.Hash = crypto.createHash("sha256").update(data, "utf-8");
+  return hash.digest("hex");
 };

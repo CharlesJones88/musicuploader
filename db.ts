@@ -36,7 +36,7 @@ export const createSongsTable = async (): Promise<void> =>
   await runAsync(
     `CREATE TABLE IF NOT EXISTS songs (
     id INTEGER PRIMARY KEY,
-    hash VARCHAR (40) NOT NULL,
+    hash VARCHAR (64) NOT NULL,
     title TEXT NOT NULL,
     artist TEXXT NOT NULL,
     album TEXT NOT NULL,
