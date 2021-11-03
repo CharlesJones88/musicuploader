@@ -14,7 +14,6 @@ export const runFileServer = {
     wss.on('connection', (ws: WebSocket) => {
       console.log('Client connected, waiting for message.');
       ws.on('message', async (message: WebSocket.Data) => {
-        console.log(`Getting list of songs that aren't on server`);
         const songsToSend: Array<string> = await getFilesToSend(
           JSON.parse(message.toString()),
         );
