@@ -32,9 +32,16 @@ const addFilesToDB = async (currentPath: string) => {
     } else if (path.extname(discoveredFile).match(/\.(mp4|m4a|mp3)$/)) {
       const metadata: mm.IAudioMetadata = await mm.parseFile(file);
       const {title, artist, album} = metadata.common;
-      const hash = getHash(createHashingString(title, artist, album));
+      const hash = getHash(
+        createHashingString(title as string, artist as string, album as string),
+      );
       console.log(`Inserting ${hash}\t${title}\t${artist}\t${album}`);
-      await insertSong(hash, title, artist, album);
+      await insertSong(
+        hash,
+        title as string,
+        artist as string,
+        album as string,
+      );
     }
   }
 };
