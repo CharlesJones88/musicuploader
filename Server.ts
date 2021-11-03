@@ -27,10 +27,6 @@ export const runFileServer = {
     const getFilesToSend = async (
       songsRequest: Array<string>
     ): Promise<Array<string>> => {
-      if (!existsSync(DB_FILE)) {
-        console.log('DB_FILE missing, creating...');
-        await addLocalMusicFilesToDB(basePath);
-      }
       const filteredTitles: Array<Song> = await getSongsByTitle(songsRequest);
 
       return songsRequest.filter(
