@@ -20,7 +20,7 @@ export const initDB = async (currentPath: string): Promise<void> => {
   await createSongsTable();
   try {
     const songCount: number = await getSongCount();
-    console.log(`Songs in db ${songCount}`);
+    console.log(`Songs in db`, songCount);
     if (songCount === 0) {
       await addFilesToDB(currentPath);
     }
