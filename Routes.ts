@@ -20,13 +20,15 @@ router.post('/file', (req: express.Request, _, next: express.NextFunction) => {
   console.log(`Received song ${title} write to directory ${dir}`);
   mkdirp.sync(dir);
   req.pipe(createWriteStream(`${dir}/${fileName}`));
-  req.on('error', (err: Error) => {
+  console.log('Writing file...');
+  req.on('error', async (err: Error) => {
     console.error(err);
-    deleteSong(hash);
+    await deleteSong(hash);
     next();
   });
-  req.on('end', () => {
-    insertSong(hash, title as string, artist as string, album as string);
+  req.on('end', async () => {
+    console.log(`Successfully uploaded file ${fileName}`);
+    await insertSong(hash, title as string, artist as string, album as string);
     next();
   });
 });
