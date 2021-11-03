@@ -1,7 +1,7 @@
 import express from 'express';
 import mkdirp from 'mkdirp';
 import {createWriteStream} from 'fs';
-import { insertSong, getAllSongs } from './db';
+import { insertSong, getAllSongs, deleteSong } from './db';
 import {basePath} from './types';
 import {createHashingString, getHash} from './Utils';
 
@@ -13,14 +13,19 @@ router.get('/songs', async (_, res: express.Response) =>
 
 router.post('/file', (req: express.Request, _, next: express.NextFunction) => {
   const {title, artist, album, fileName} = req.query;
+  const hash: string = getHash(
+    createHashingString(title as string, artist as string, album as string),
+  );
   const dir: string = `${basePath}/${artist}/${album}`;
   console.log(`Received song ${title} write to directory ${dir}`);
   mkdirp.sync(dir);
   req.pipe(createWriteStream(`${dir}/${fileName}`));
+  req.on('error', (err: Error) => {
+    console.error(err);
+    deleteSong(hash);
+    next();
+  });
   req.on('end', () => {
-    const hash = getHash(
-      createHashingString(title as string, artist as string, album as string),
-    );
     insertSong(hash, title as string, artist as string, album as string);
     next();
   });

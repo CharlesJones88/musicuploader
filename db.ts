@@ -1,5 +1,5 @@
 import sqlite3 from 'sqlite3';
-import {DB_FILE, Song} from './types';
+import { DB_FILE, Song } from './types';
 
 let db: sqlite3.Database = new sqlite3.Database(DB_FILE);
 
@@ -44,6 +44,8 @@ export const createSongsTable = async (): Promise<void> =>
   )`,
   );
 
+export const deleteSong = async (hash: string) => await runAsync(`DELETE FROM songs WHERE hash = $hash`, { $hash: hash })
+
 export const insertSong = async (
   hash: string,
   title: string,
@@ -75,7 +77,7 @@ export const getSong = async (hash: string): Promise<Song> =>
   );
 
 export const getSongCount = async (): Promise<number> => {
-  const {count} = await getAsync(`SELECT COUNT(*) AS 'count' FROM 'songs'`);
+  const { count } = await getAsync(`SELECT COUNT(*) AS 'count' FROM 'songs'`);
   return count;
 };
 
