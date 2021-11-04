@@ -4,12 +4,10 @@ import * as mm from 'music-metadata';
 import {
   connect,
   createSongsTable,
-  getAllSongs,
   getSongCount,
   insertSong,
 } from './db';
 import {createHashingString, getHash} from './Utils';
-import {DB_FILE} from './types';
 
 const getCount = async (): Promise<number | null> => {
   try {

@@ -28,7 +28,7 @@ router.post('/file', (req: express.Request, res: express.Response, next: express
   });
 
   req.on('close', async () => {
-    res.end()
+    res.end();
     console.log(`Successfully uploaded file ${fileName}`);
     await insertSong(hash, title as string, artist as string, album as string);
     next();
