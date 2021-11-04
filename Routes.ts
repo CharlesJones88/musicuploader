@@ -16,6 +16,9 @@ router.post('/file', (req: express.Request, res: express.Response, next: express
   const hash: string = getHash(
     createHashingString(title as string, artist as string, album as string),
   );
+  if (artist == void 0 || album == void 0) {
+    return next();
+  }
   const dir: string = `${basePath}/${artist}/${album}`;
   console.log(`Received song ${title} write to directory ${dir}`);
   mkdirp.sync(dir);
@@ -32,6 +35,7 @@ router.post('/file', (req: express.Request, res: express.Response, next: express
   req.on('close', async () => {
     console.log(`Successfully uploaded file ${fileName}`);
     await insertSong(hash, title as string, artist as string, album as string);
+    res.status(200).send();
     next();
   });
 });
