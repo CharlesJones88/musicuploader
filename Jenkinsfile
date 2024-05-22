@@ -4,10 +4,12 @@ node {
   agent {
     label = 'arm64'
   }
+  
   environment {
     imageName = 'ultramixerman/musicuploader'
     registryCredentialSet = 'dockerhub'
-  }
+  } 
+  
   stage('Clone repository') {
     checkout scm
   }
