@@ -12,7 +12,7 @@ node('arm64') {
   }
   
   stage('Build image') {
-    app = docker.build(env.imageName)
+    app = docker.build(env.IMAGE_NAME)
   }
   
   stage('Push image') {
