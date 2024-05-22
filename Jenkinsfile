@@ -45,9 +45,9 @@ node('arm64') {
     sh "rm ${helmFolder}/Chart.yaml"
     writeYaml(file:"${helmFolder}/Chart.yaml", data:chartData)
     
-    //sshagent (["git"]) {
+    sshagent (["github-creds"]) {
       sh("cd music-uploader-fleet && git add . && git commit -m 'Jenkins: bump docker image version to ${env.BUILD_NUMBER}' && git push -u origin main")
-    //} 
+    } 
   }
   
   stage('Cleanup') {
