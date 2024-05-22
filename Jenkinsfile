@@ -23,9 +23,9 @@ node('arm64') {
   }
   
   stage('Clone Chart Repo') {
-    //sshagent (["git"]) {
+    sshagent (["github-creds"]) {
       sh "git clone ${env.CHART_REPO}"
-    //}
+    }
   }
   
   stage('Deploy') {
