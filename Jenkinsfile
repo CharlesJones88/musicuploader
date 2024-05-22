@@ -9,7 +9,7 @@ node {
   }
   
   stage('Build image') {
-    app = docker.build(env.IMAGE_NAME)
+    app = docker.build(env.imageName)
   }
   
   stage('Push image') {
