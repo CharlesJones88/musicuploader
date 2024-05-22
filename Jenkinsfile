@@ -16,7 +16,7 @@ node('arm64') {
   }
   
   stage('Push image') {
-    docker.withRegistry('', env.registryCredentialSet) {
+    docker.withRegistry('', env.dockerhub) {
       app.push("${env.BUILD_NUMBER}")
       app.push("latest")
     }
