@@ -24,7 +24,7 @@ node('arm64') {
   
   stage('Clone Chart Repo') {
     sshagent (["github-creds"]) {
-      sh "git clone ${env.CHART_REPO}"
+      sh "rm -rf music-uploader-fleet && git clone ${env.CHART_REPO}"
     }
   }
   
