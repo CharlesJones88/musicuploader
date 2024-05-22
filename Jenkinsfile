@@ -1,10 +1,7 @@
 node {
+  label 'arm64'
   def app
 
-  agent {
-    label = 'arm64'
-  }
-  
   environment {
     imageName = 'ultramixerman/musicuploader'
     registryCredentialSet = 'dockerhub'
