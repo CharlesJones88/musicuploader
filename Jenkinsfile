@@ -1,5 +1,4 @@
-node {
-  label 'arm64'
+node('arm64') {
   def app
 
   environment {
