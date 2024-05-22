@@ -1,6 +1,6 @@
 node {
   def app
-  
+
   agent {
     label = 'arm64'
   }
