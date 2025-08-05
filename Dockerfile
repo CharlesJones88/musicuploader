@@ -1,7 +1,7 @@
 FROM node:latest
-RUN npm install --global --silent pnpm
+RUN corepack enable pnpm
 COPY package.json /package.json
 COPY pnpm-lock.yaml /pnpm-lock.yaml
-RUN npm install
+RUN pnpm install
 COPY *.ts /
-CMD ["pnpm", "start"]
+ENTRYPOINT ["pnpm", "start"]
