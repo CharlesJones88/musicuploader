@@ -1,9 +1,9 @@
 import { WebSocketServer } from 'ws';
 import express from 'express';
-import { basePath } from './types';
-import { router } from './Routes';
-import { getSongsByTitle } from './db';
-import { initDB } from './LocalFileUploader';
+import { basePath } from './types.js';
+import { router } from './Routes.js';
+import { getSongsByTitle } from './db.js';
+import { initDB } from './LocalFileUploader.js';
 
 const getFilesToSend = async (songsRequest: Array<string>) => {
   const filteredTitles = Object.groupBy(

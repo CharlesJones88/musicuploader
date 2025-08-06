@@ -1,7 +1,15 @@
 import sqlite3 from 'sqlite3';
-import { DB_FILE, Song } from './types';
+import { DB_FILE, Song } from './types.js';
+import { mkdir, open } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import path from 'node:path';
 
-let db = new sqlite3.Database(DB_FILE);
+if (!existsSync(DB_FILE)) {
+  await mkdir(path.dirname(DB_FILE), { recursive: true });
+  await (await open(DB_FILE)).close();
+}
+
+const db = new sqlite3.Database(DB_FILE);
 
 const runAsync = <Params = unknown>(query: string, params?: Params) =>
   new Promise<void>((resolve: () => void, reject: (reason?: Error) => void) =>
@@ -27,10 +35,6 @@ const allAsync = <Params = unknown, Return = unknown>(
       err ? reject(err) : resolve(rows),
     ),
   );
-
-export const connect = () => {
-  db = new sqlite3.Database(DB_FILE);
-};
 
 export const createSongsTable = async () =>
   await runAsync(

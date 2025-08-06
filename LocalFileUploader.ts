@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import * as mm from 'music-metadata';
-import { connect, createSongsTable, getSongCount, insertSong } from './db';
-import { createHashingString, getHash } from './Utils';
+import { createSongsTable, getSongCount, insertSong } from './db.js';
+import { createHashingString, getHash } from './Utils.js';
 
 const getCount = async () => {
   try {
@@ -16,7 +16,6 @@ const getCount = async () => {
 };
 
 export const initDB = async (currentPath: string) => {
-  connect();
   await createSongsTable();
   const songCount = await getCount();
   if (songCount == void 0 || songCount === 0) {
@@ -33,15 +32,8 @@ const addFilesToDB = async (currentPath: string) => {
     } else if (path.extname(discoveredFile).match(/\.(mp4|m4a|mp3)$/)) {
       const metadata = await mm.parseFile(file);
       const { title, artist, album } = metadata.common;
-      const hash = getHash(
-        createHashingString(title, artist, album),
-      );
-      await insertSong(
-        hash,
-        title,
-        artist,
-        album,
-      );
+      const hash = getHash(createHashingString(title, artist, album));
+      await insertSong(hash, title, artist, album);
     }
   }
 };

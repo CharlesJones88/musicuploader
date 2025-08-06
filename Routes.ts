@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { createWriteStream } from 'fs';
-import { insertSong, getAllSongs, deleteSong } from './db';
-import { basePath, Song } from './types';
-import { createHashingString, getHash } from './Utils';
+import { insertSong, getAllSongs, deleteSong } from './db.js';
+import { basePath, Song } from './types.js';
+import { createHashingString, getHash } from './Utils.js';
 import { mkdir } from 'fs/promises';
 
 const router = Router();
