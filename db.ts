@@ -1,5 +1,5 @@
 import sqlite3 from 'sqlite3';
-import { DB_FILE, Song } from './types.js';
+import { DB_FILE, basePath, Song } from './types.js';
 import { mkdir, open } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
@@ -7,6 +7,10 @@ import path from 'node:path';
 if (!existsSync(DB_FILE)) {
   await mkdir(path.dirname(DB_FILE), { recursive: true });
   await (await open(DB_FILE, 'w')).close();
+}
+
+if (!existsSync(basePath)) {
+  await mkdir(path.dirname(basePath), { recursive: true });
 }
 
 const db = new sqlite3.Database(DB_FILE);
