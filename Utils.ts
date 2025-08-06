@@ -1,12 +1,11 @@
-import crypto from 'crypto';
+import { createHash } from 'crypto';
 
 export const createHashingString = (
-  title: string,
-  artist: string,
-  album: string,
-): string => `${title}:${artist}:${album}`;
+  title?: string,
+  artist?: string,
+  album?: string,
+) => [title, artist, album].filter(item => item != void 0).join(':');
 
-export const getHash = (data: string): string => {
-  const hash: crypto.Hash = crypto.createHash("sha256").update(data, "utf-8");
-  return hash.digest("hex");
+export const getHash = (data: string) => {
+  return createHash('sha256').update(data, 'utf-8').digest('hex');
 };

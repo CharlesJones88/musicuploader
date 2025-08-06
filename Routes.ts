@@ -1,30 +1,33 @@
-import express from 'express';
-import mkdirp from 'mkdirp';
+import { Router } from 'express';
 import { createWriteStream } from 'fs';
 import { insertSong, getAllSongs, deleteSong } from './db';
-import { basePath } from './types';
+import { basePath, Song } from './types';
 import { createHashingString, getHash } from './Utils';
+import { mkdir } from 'fs/promises';
 
-const router: express.Router = express.Router();
+const router = Router();
 
-router.get('/songs', async (_, res: express.Response) =>
-  res.send(await getAllSongs())
+router.get<void, Array<Song>, void, void>('/songs', async (_, res) =>
+  res.send(await getAllSongs()),
 );
 
-router.post('/file', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+router.post<
+  void,
+  void,
+  void,
+  { title: string; artist: string; album: string; fileName: string }
+>('/file', async (req, res, next) => {
   const { title, artist, album, fileName } = req.query;
-  const hash: string = getHash(
-    createHashingString(title as string, artist as string, album as string),
-  );
+  const hash = getHash(createHashingString(title, artist, album));
   if (artist == void 0 || album == void 0) {
     return next();
   }
-  const dir: string = `${basePath}/${artist}/${album}`;
+  const dir = `${basePath}/${artist}/${album}`;
   console.log(`Received song ${title} write to directory ${dir}`);
-  mkdirp.sync(dir);
+  await mkdir(dir, { recursive: true });
   req.pipe(createWriteStream(`${dir}/${fileName}`));
   console.log('Writing file...');
-  req.on('error', async (err: Error) => {
+  req.on('error', async err => {
     console.error(err);
     await deleteSong(hash);
     next();
@@ -34,12 +37,14 @@ router.post('/file', (req: express.Request, res: express.Response, next: express
 
   req.on('close', async () => {
     console.log(`Successfully uploaded file ${fileName}`);
-    await insertSong(hash, title as string, artist as string, album as string);
+    await insertSong(hash, title, artist, album);
     res.status(200).send();
     next();
   });
 });
 
-router.get('/status', (_, res: express.Response) => res.send('SUCCESS'));
+router.get<void, string, void, void>('/status', (_, res) =>
+  res.send('SUCCESS'),
+);
 
 export { router };

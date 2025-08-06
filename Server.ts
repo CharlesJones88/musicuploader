@@ -1,40 +1,38 @@
-import WebSocket from 'ws';
+import { WebSocketServer } from 'ws';
 import express from 'express';
-import {basePath, Song} from './types';
-import {router} from './Routes';
-import {getSongsByTitle} from './db';
-import {initDB} from './LocalFileUploader';
+import { basePath } from './types';
+import { router } from './Routes';
+import { getSongsByTitle } from './db';
+import { initDB } from './LocalFileUploader';
+
+const getFilesToSend = async (songsRequest: Array<string>) => {
+  const filteredTitles = Object.groupBy(
+    await getSongsByTitle(songsRequest),
+    song => song.title,
+  );
+
+  return songsRequest.filter(song => !Object.hasOwn(filteredTitles, song));
+};
 
 export const runFileServer = {
-  start: (): void => {
-    const wss: WebSocket.Server = new WebSocket.Server({
+  start: async () => {
+    await initDB(basePath);
+
+    const wss = new WebSocketServer({
       port: 8222,
     });
 
-    wss.on('connection', (ws: WebSocket) => {
+    wss.on('connection', ws => {
       console.log('Client connected, waiting for message.');
-      ws.on('message', async (message: WebSocket.Data) => {
-        const songsToSend: Array<string> = await getFilesToSend(
-          JSON.parse(message.toString()),
-        );
-        console.log(`${(songsToSend ?? []).length} songs missing from server`);
-        ws.send(JSON.stringify(songsToSend ?? []));
+      ws.addEventListener('message', async message => {
+        const songsToSend =
+          (await getFilesToSend(JSON.parse(message.toString()))) ?? [];
+        console.log(`${songsToSend.length} songs missing from server`);
+        ws.send(JSON.stringify(songsToSend));
       });
     });
 
-    const getFilesToSend = async (
-      songsRequest: Array<string>,
-    ): Promise<Array<string>> => {
-      await initDB(basePath);
-      const filteredTitles: Array<Song> = await getSongsByTitle(songsRequest);
-
-      return songsRequest.filter(
-        (song: string) =>
-          !filteredTitles.some(({title}: Song) => song === title),
-      );
-    };
-
-    const PORT: number = 8200;
+    const PORT = 8200;
     const app = express();
     app.use(router);
     app.listen(PORT, () => console.log(`Now listening on port ${PORT}`));

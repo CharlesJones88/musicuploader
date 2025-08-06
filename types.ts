@@ -1,5 +1,5 @@
-export const basePath: string = '/mnt/md0/public/Music';
-export const DB_FILE: string = '/mnt/md0/public/songs.db';
+export const basePath = '/mnt/md0/public/Music';
+export const DB_FILE = '/mnt/md0/public/songs.db';
 
 export type Song = {
   hash: string;

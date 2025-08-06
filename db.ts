@@ -1,38 +1,38 @@
 import sqlite3 from 'sqlite3';
 import { DB_FILE, Song } from './types';
 
-let db: sqlite3.Database = new sqlite3.Database(DB_FILE);
+let db = new sqlite3.Database(DB_FILE);
 
-const runAsync: (query: string, params?: any) => Promise<any> = (
+const runAsync = <Params = unknown>(query: string, params?: Params) =>
+  new Promise<void>((resolve: () => void, reject: (reason?: Error) => void) =>
+    db.run(query, params, err => (err ? reject(err) : resolve())),
+  );
+
+const getAsync = <Params = unknown, Return = unknown>(
   query: string,
-  params?: any,
+  params?: Params,
 ) =>
-  new Promise(
-    (resolve: (value?: any) => void, reject: (reason?: any) => void) =>
-      db.run(query, params, (err: Error) => (err ? reject(err) : resolve())),
+  new Promise<Return>((resolve, reject: (reason?: Error) => void) =>
+    db.get(query, params, (err: Error, data: Return) =>
+      err ? reject(err) : resolve(data),
+    ),
   );
 
-const getAsync = (query: string, params?: any): Promise<any> =>
-  new Promise(
-    (resolve: (value?: any) => void, reject: (reason?: any) => void) =>
-      db.get(query, params, (err: Error, data: any) =>
-        err ? reject(err) : resolve(data),
-      ),
+const allAsync = <Params = unknown, Return = unknown>(
+  query: string,
+  params?: Params,
+) =>
+  new Promise<Array<Return>>((resolve, reject: (reason?: Error) => void) =>
+    db.all(query, params, (err: Error, rows: Array<Return>) =>
+      err ? reject(err) : resolve(rows),
+    ),
   );
 
-const allAsync = (query: string, params?: any): Promise<any> =>
-  new Promise(
-    (resolve: (value?: any) => void, reject: (reason?: any) => void) =>
-      db.all(query, params, (err: Error, rows: Array<any>) =>
-        err ? reject(err) : resolve(rows),
-      ),
-  );
-
-export const connect = (): void => {
+export const connect = () => {
   db = new sqlite3.Database(DB_FILE);
 };
 
-export const createSongsTable = async (): Promise<void> =>
+export const createSongsTable = async () =>
   await runAsync(
     `CREATE TABLE IF NOT EXISTS songs (
     id INTEGER PRIMARY KEY,
@@ -44,14 +44,25 @@ export const createSongsTable = async (): Promise<void> =>
   )`,
   );
 
-export const deleteSong = async (hash: string) => await runAsync(`DELETE FROM songs WHERE hash = $hash`, { $hash: hash })
+export const deleteSong = async (hash: string) =>
+  await runAsync(`DELETE FROM songs WHERE hash = $hash`, { $hash: hash });
 
 export const insertSong = async (
   hash: string,
-  title: string,
-  artist: string,
-  album: string,
-): Promise<void> =>
+  title?: string,
+  artist?: string,
+  album?: string,
+): Promise<void> => {
+  if (title == void 0) {
+    throw new Error('Title not provided');
+  }
+  if (artist == void 0) {
+    throw new Error('Artist not provided');
+  }
+  if (album == void 0) {
+    throw new Error('Ablum not provided');
+  }
+
   await runAsync(
     'INSERT OR IGNORE INTO songs (hash, title, artist, album) VALUES ($hash, $title, $artist, $album)',
     {
@@ -61,9 +72,10 @@ export const insertSong = async (
       $album: album,
     },
   );
+};
 
 export const getSong = async (hash: string): Promise<Song> =>
-  await getAsync(
+  await getAsync<{ $hash: string }, Song>(
     `SELECT 
       hash, 
       title, 
@@ -76,18 +88,18 @@ export const getSong = async (hash: string): Promise<Song> =>
     },
   );
 
-export const getSongCount = async (): Promise<number> => {
-  const { count } = await getAsync(`SELECT COUNT(*) AS 'count' FROM 'songs'`);
+export const getSongCount = async () => {
+  const { count } = await getAsync<void, { count: number }>(
+    `SELECT COUNT(*) AS 'count' FROM 'songs'`,
+  );
   return count;
 };
 
 export const getAllSongs = async (): Promise<Array<Song>> =>
-  await allAsync('SELECT hash, title, artist, album FROM songs');
+  await allAsync<void, Song>('SELECT hash, title, artist, album FROM songs');
 
-export const getSongsByTitle = async (
-  titles: Array<string>,
-): Promise<Array<Song>> =>
-  await allAsync(
+export const getSongsByTitle = async (titles: Array<string>) =>
+  await allAsync<Array<string>, Song>(
     `SELECT 
       hash, 
       title, 

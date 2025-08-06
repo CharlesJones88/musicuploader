@@ -1,7 +1,9 @@
-FROM node:latest
-RUN corepack enable pnpm
+FROM node:lts-alpine
+
 COPY package.json /package.json
 COPY pnpm-lock.yaml /pnpm-lock.yaml
-RUN pnpm install
 COPY *.ts /
+
+RUN corepack enable pnpm && pnpm install
+
 ENTRYPOINT ["pnpm", "start"]
