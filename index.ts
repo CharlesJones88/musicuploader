@@ -7,6 +7,7 @@ import { basePath } from './types.js';
 process.title = 'musicUploader';
 
 if (!existsSync(basePath)) {
+  console.log('basePath missing creating...');
   await mkdir(path.dirname(basePath), { recursive: true });
 }
 
