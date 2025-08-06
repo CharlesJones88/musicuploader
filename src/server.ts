@@ -1,9 +1,9 @@
 import { WebSocketServer } from 'ws';
 import express from 'express';
 import { basePath } from './types.js';
-import { router } from './Routes.js';
+import { router } from './routes.js';
 import { getSongsByTitle } from './db.js';
-import { initDB } from './LocalFileUploader.js';
+import { initDB } from './localFileUploader.js';
 
 const app = express();
 

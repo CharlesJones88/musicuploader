@@ -1,5 +1,5 @@
 import { existsSync } from 'node:fs';
-import { runFileServer } from './Server.js';
+import { runFileServer } from './server.js';
 import { mkdir } from 'node:fs/promises';
 import { basePath } from './types.js';
 
