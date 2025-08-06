@@ -1,10 +1,11 @@
 import { WebSocketServer } from 'ws';
 import express from 'express';
-import { basePath } from './types.js';
+import config from './config.json' with { type: 'json' };
 import { router } from './routes.js';
-import { getSongsByTitle } from './db.js';
-import { initDB } from './localFileUploader.js';
+import { initDB } from './db/init.js';
+import { getSongsByTitle } from './db/song.js';
 
+const { basePath } = config;
 const app = express();
 
 const getFilesToSend = async (songsRequest: Array<string>) => {
@@ -16,7 +17,7 @@ const getFilesToSend = async (songsRequest: Array<string>) => {
   return songsRequest.filter(song => !Object.hasOwn(filteredTitles, song));
 };
 
-export const runFileServer = {
+export const fileServer = {
   start: async () => {
     await initDB(basePath);
 

@@ -1,19 +1,9 @@
-import { statSync, readdirSync } from 'fs';
-import path from 'path';
+import { readdirSync, statSync } from 'fs';
 import { parseFile } from 'music-metadata';
-import { createSongsTable, getSongCount, insertSong } from './db.js';
-import { createHashingString, getHash } from './utils.js';
-
-const getCount = async () => {
-  try {
-    const songCount = await getSongCount();
-    console.log(`Songs in db`, songCount);
-    return songCount;
-  } catch (err) {
-    console.error('Error getting song count', err);
-    return;
-  }
-};
+import path from 'path';
+import { runAsync } from './db.js';
+import { getCount, insertSong } from './song.js';
+import { createHashingString, getHash } from '../utils.js';
 
 const addFilesToDB = async (currentPath: string) => {
   for await (const discoveredFile of readdirSync(currentPath)) {
@@ -29,6 +19,18 @@ const addFilesToDB = async (currentPath: string) => {
     }
   }
 };
+
+const createSongsTable = async () =>
+  await runAsync(
+    `CREATE TABLE IF NOT EXISTS songs (
+    id INTEGER PRIMARY KEY,
+    hash VARCHAR (64) NOT NULL,
+    title TEXT NOT NULL,
+    artist TEXXT NOT NULL,
+    album TEXT NOT NULL,
+    UNIQUE(hash, title, artist, album)
+  )`,
+  );
 
 export const initDB = async (currentPath: string) => {
   await createSongsTable();

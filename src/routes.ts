@@ -1,10 +1,12 @@
 import { Router } from 'express';
 import { createWriteStream } from 'node:fs';
-import { insertSong, getAllSongs, deleteSong } from './db.js';
-import { basePath, Song } from './types.js';
+import config from './config.json' with { type: 'json' };
+import { insertSong, getAllSongs, deleteSong } from './db/song.js';
+import { Song } from './Song.js';
 import { createHashingString, getHash } from './utils.js';
 import { mkdir } from 'node:fs/promises';
 
+const { basePath } = config;
 const router = Router();
 
 router.get<void, Array<Song>, void, void>('/songs', async (_, res) =>
