@@ -6,7 +6,7 @@ import path from 'node:path';
 
 if (!existsSync(DB_FILE)) {
   await mkdir(path.dirname(DB_FILE), { recursive: true });
-  await (await open(DB_FILE)).close();
+  await (await open(DB_FILE, 'w')).close();
 }
 
 const db = new sqlite3.Database(DB_FILE);
