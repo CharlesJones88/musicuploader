@@ -5,6 +5,8 @@ import { router } from './Routes.js';
 import { getSongsByTitle } from './db.js';
 import { initDB } from './LocalFileUploader.js';
 
+const app = express();
+
 const getFilesToSend = async (songsRequest: Array<string>) => {
   const filteredTitles = Object.groupBy(
     await getSongsByTitle(songsRequest),
@@ -18,8 +20,14 @@ export const runFileServer = {
   start: async () => {
     await initDB(basePath);
 
+    const { PORT = '8200', WS_PORT = '8222' } = process.env;
+
     const wss = new WebSocketServer({
-      port: 8222,
+      port: +WS_PORT,
+    });
+
+    wss.on('listening', () => {
+      console.log(`WS now listening on port: ${WS_PORT}`);
     });
 
     wss.on('connection', ws => {
@@ -32,9 +40,7 @@ export const runFileServer = {
       });
     });
 
-    const PORT = 8200;
-    const app = express();
     app.use(router);
-    app.listen(PORT, () => console.log(`Now listening on port ${PORT}`));
+    app.listen(+PORT, () => console.log(`Now listening on port: ${PORT}`));
   },
 };
