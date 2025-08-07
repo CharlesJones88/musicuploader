@@ -34,9 +34,8 @@ export const fileServer = {
     wss.on('connection', ws => {
       console.log('Client connected, waiting for message.');
       ws.addEventListener('message', async message => {
-        console.log('Received message', message);
         const songsToSend =
-          (await getFilesToSend(JSON.parse(message.toString()))) ?? [];
+          (await getFilesToSend(JSON.parse(message.data.toString()))) ?? [];
         console.log(`${songsToSend.length} songs missing from server`);
         ws.send(JSON.stringify(songsToSend));
       });
