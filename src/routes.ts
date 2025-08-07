@@ -41,8 +41,4 @@ router.post<
   });
 });
 
-router.get<void, string, void, void>('/status', (_, res) =>
-  res.send('SUCCESS'),
-);
-
 export { router };
