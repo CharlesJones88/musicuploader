@@ -14,8 +14,6 @@ jobs:
 
       - name: Dokploy Deployment
         env:
-          PROJECT_ID: musicCopier
-          APP_ID: musiccopier-server-wphcto
         uses: benbristow/dokploy-deploy-action@0.0.1
         with:
           auth_token: ${{ secrets.DOKPLOY_AUTH_TOKEN }}
