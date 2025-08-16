@@ -37,6 +37,3 @@ export const allAsync = <Params = unknown, Return = unknown>(
       err ? reject(err) : resolve(rows),
     ),
   );
-
-
-
