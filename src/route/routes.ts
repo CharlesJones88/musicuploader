@@ -27,12 +27,13 @@ router.post('/file', async (request) => {
   await Deno.mkdir(dir, { recursive: true });
 
   const { body } = request;
-  await using file = await Deno.create(`${dir}/${fileName}`);
   try {
+    await using file = await Deno.create(`${dir}/${fileName}`);
     console.info('Writing file...');
     await body?.pipeTo(file.writable);
     console.info(`Successfully uploaded file ${fileName}`);
     await insertSong(hash, title, artist, album);
+    console.info(`Successfully added ${fileName}`)
     return new Response('OK', { status: 200 });
   } catch (error) {
     console.error(error);
