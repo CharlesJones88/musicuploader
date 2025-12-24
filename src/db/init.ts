@@ -1,17 +1,17 @@
-import { readdirSync, statSync } from 'fs';
 import { parseFile } from 'music-metadata';
-import path from 'path';
-import { runAsync } from './db.js';
-import { getCount, insertSong } from './song.js';
-import { createHashingString, getHash } from '../utils.js';
+import { extname, resolve } from '@std/path';
+import { runAsync } from './db.ts';
+import { getCount, insertSong } from './song.ts';
+import { createHashingString, getHash } from '../utils.ts';
+import { readDir, stat } from '../fileUtils/index.ts';
 
 const addFilesToDB = async (currentPath: string) => {
-  for await (const discoveredFile of readdirSync(currentPath)) {
-    const file = path.resolve(currentPath, discoveredFile);
-    const stat = statSync(file);
-    if (stat.isDirectory()) {
+  for await (const discoveredFile of readDir(currentPath)) {
+    const file = resolve(currentPath, discoveredFile.name);
+    const fileInfo = await stat(file);
+    if (fileInfo.isDirectory) {
       await addFilesToDB(file);
-    } else if (path.extname(discoveredFile).match(/\.(mp4|m4a|mp3)$/)) {
+    } else if (extname(discoveredFile.name).match(/\.(mp4|m4a|mp3)$/)) {
       const metadata = await parseFile(file);
       const { title, artist, album } = metadata.common;
       const hash = getHash(createHashingString(title, artist, album));
@@ -20,7 +20,7 @@ const addFilesToDB = async (currentPath: string) => {
   }
 };
 
-const createSongsTable = async () =>
+async function createSongsTable() {
   await runAsync(
     `CREATE TABLE IF NOT EXISTS songs (
     id INTEGER PRIMARY KEY,
@@ -31,11 +31,12 @@ const createSongsTable = async () =>
     UNIQUE(hash, title, artist, album)
   )`,
   );
+}
 
-export const initDB = async (currentPath: string) => {
+export async function initDB(currentPath: string) {
   await createSongsTable();
   const songCount = await getCount();
   if (songCount == void 0 || songCount === 0) {
     await addFilesToDB(currentPath);
   }
-};
+}

@@ -1,39 +1,49 @@
-import sqlite3 from 'sqlite3';
-import { existsSync } from 'node:fs';
-import path from 'node:path';
-import { mkdir, open } from 'node:fs/promises';
+import { Database, RestBindParameters } from '@db/sqlite';
+import { dirname } from '@std/path';
 import config from '../config.json' with { type: 'json' };
+import { exists } from '../fileUtils/index.ts';
 
 const { dbFile } = config;
 
-if (!existsSync(dbFile)) {
-  await mkdir(path.dirname(dbFile), { recursive: true });
-  await (await open(dbFile, 'w')).close();
+if (!await exists(dbFile)) {
+  await Deno.mkdir(dirname(dbFile), { recursive: true });
+  (await Deno.open(dbFile, { create: true, write: true })).close();
 }
 
-const db = new sqlite3.Database(dbFile);
+const db = new Database(dbFile);
 
-export const runAsync = <Params = unknown>(query: string, params?: Params) =>
-  new Promise<void>((resolve: () => void, reject: (reason?: Error) => void) =>
-    db.run(query, params, err => (err ? reject(err) : resolve())),
-  );
-
-export const getAsync = <Params = unknown, Return = unknown>(
+export function runAsync(
   query: string,
-  params?: Params,
-) =>
-  new Promise<Return>((resolve, reject: (reason?: Error) => void) =>
-    db.get(query, params, (err: Error, data: Return) =>
-      err ? reject(err) : resolve(data),
-    ),
-  );
+  ...params: RestBindParameters
+) {
+  try {
+    const result = db.exec(query, params);
+    return Promise.resolve(result);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
 
-export const allAsync = <Params = unknown, Return = unknown>(
+export function getAsync<Return extends object>(
   query: string,
-  params?: Params,
-) =>
-  new Promise<Array<Return>>((resolve, reject: (reason?: Error) => void) =>
-    db.all(query, params, (err: Error, rows: Array<Return>) =>
-      err ? reject(err) : resolve(rows),
-    ),
-  );
+  ...params: RestBindParameters
+) {
+  try {
+    const result = db.prepare(query).get<Return>(params);
+    return Promise.resolve(result);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+
+export function allAsync<Return extends object>(
+  query: string,
+  ...params: RestBindParameters
+) {
+  try {
+    const result = db.prepare(query).all<Return>(params);
+    return Promise.resolve(result);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}

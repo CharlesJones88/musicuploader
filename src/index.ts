@@ -1,14 +1,14 @@
-import { existsSync } from 'node:fs';
-import { mkdir } from 'node:fs/promises';
-import { fileServer } from './server.js';
+import process from 'node:process';
+import { fileServer } from './server.ts';
 import config from './config.json' with { type: 'json' };
+import { exists } from './fileUtils/index.ts';
 
 const { basePath } = config;
 process.title = 'musicUploader';
 
-if (!existsSync(basePath)) {
+if (!await exists(basePath)) {
   console.log('basePath missing creating...');
-  await mkdir(basePath, { recursive: true });
+  await Deno.mkdir(basePath, { recursive: true });
 }
 
 fileServer.start();

@@ -1,15 +1,16 @@
-import { allAsync, getAsync, runAsync } from './db.js';
-import { Song } from '../Song.js';
+import { allAsync, getAsync, runAsync } from './db.ts';
+import { Song } from '../Song.ts';
 
-export const deleteSong = async (hash: string) =>
-  await runAsync(`DELETE FROM songs WHERE hash = $hash`, { $hash: hash });
+export async function deleteSong(hash: string) {
+  return await runAsync(`DELETE FROM songs WHERE hash = ?`, hash);
+}
 
-export const insertSong = async (
+export async function insertSong(
   hash: string,
   title?: string,
   artist?: string,
   album?: string,
-): Promise<void> => {
+) {
   if (title == void 0) {
     throw new Error('Title not provided');
   }
@@ -21,35 +22,33 @@ export const insertSong = async (
   }
 
   await runAsync(
-    'INSERT OR IGNORE INTO songs (hash, title, artist, album) VALUES ($hash, $title, $artist, $album)',
-    {
-      $hash: hash,
-      $title: title,
-      $artist: artist,
-      $album: album,
-    },
+    'INSERT OR IGNORE INTO songs (hash, title, artist, album) VALUES (?, ?, ?, ?)',
+    hash,
+    title,
+    artist,
+    album,
   );
-};
+}
 
-export const getSong = async (hash: string): Promise<Song> =>
-  await getAsync<{ $hash: string }, Song>(
+export async function getSong(hash: string) {
+  return await getAsync<Song>(
     `SELECT 
       hash, 
       title, 
       artist, 
       album 
     FROM songs 
-    WHERE hash = $hash`,
-    {
-      $hash: hash,
-    },
+    WHERE hash = ?`,
+    hash,
   );
+}
 
-export const getAllSongs = async (): Promise<Array<Song>> =>
-  await allAsync<void, Song>('SELECT hash, title, artist, album FROM songs');
+export async function getAllSongs() {
+  return await allAsync<Song>('SELECT hash, title, artist, album FROM songs');
+}
 
-export const getSongsByTitle = async (titles: Array<string>) =>
-  await allAsync<Array<string>, Song>(
+export async function getSongsByTitle(titles: Array<string>) {
+  return await allAsync<Song>(
     `SELECT 
       hash, 
       title, 
@@ -59,15 +58,16 @@ export const getSongsByTitle = async (titles: Array<string>) =>
     WHERE title in (${titles.map(() => '?').join(',')})`,
     titles,
   );
+}
 
-export const getCount = async () => {
+export async function getCount() {
   try {
-    const { count } = await getAsync<void, { count: number }>(
+    const { count } = await getAsync<{ count: number }>(
       `SELECT COUNT(*) AS 'count' FROM 'songs'`,
-    );
+    ) ?? {};
     return count;
   } catch (error) {
     console.error('Error getting song count', error);
     return;
   }
-};
+}

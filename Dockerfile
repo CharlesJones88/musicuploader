@@ -1,10 +1,15 @@
-FROM node:lts-alpine
+FROM denoland/deno:latest
 
-COPY package.json /package.json
-COPY pnpm-lock.yaml /pnpm-lock.yaml
-COPY pnpm-workspace.yaml /pnpm-workspace.yaml
+COPY deno.json deno.lock /
 COPY src /src
 
-RUN corepack enable pnpm && pnpm install --frozen-lockfile
+RUN deno install --entrypoint src/index.ts
 
-ENTRYPOINT ["pnpm", "start"]
+ENV OTEL_DENO=true
+ENV OTEL_EXPORTER_OTLP_ENDPOINT="http://dokploy.local/tempo"
+ENV OTEL_SERVICE_NAME="musicuploader"
+ENV OTEL_TRACES_EXPORTER=otlp
+ENV OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+
+ENTRYPOINT ["deno"]
+CMD ["run", "-A", "src/index.ts"]
