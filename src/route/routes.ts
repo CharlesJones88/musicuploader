@@ -10,16 +10,15 @@ router.get(
   async () => new Response(JSON.stringify(await getAllSongs())),
 );
 
-router.post<
-  void,
-  { title: string; artist: string; album: string; fileName: string },
-  void
->('/file', async (request) => {
-  const { title, artist, album, fileName } = request.query;
+router.post('/file', async (request) => {
+  const title = request.query.get('title') ?? undefined;
+  const artist = request.query.get('artist') ?? undefined;
+  const album = request.query.get('album') ?? undefined;
+  const fileName = request.query.get('fileName') ?? undefined;
   const hash = getHash(createHashingString(title, artist, album));
 
   if (artist == void 0 || album == void 0) {
-    console.error("Missing required query params", request.query)
+    console.error('Missing required query params', request.query);
     return new Response('Bad Request', { status: 400 });
   }
 

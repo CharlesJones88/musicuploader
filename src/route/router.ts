@@ -4,11 +4,11 @@ export type Handler<T> = {
 
 export type Methods = keyof Routes[string];
 
-export type Request<Path = unknown, Query = unknown, Hash = unknown> = {
+export type Request<Path = unknown, Hash = unknown> = {
   hash: Hash;
   method: string;
   path: Path;
-  query: Query;
+  query: URLSearchParams;
   signal: AbortSignal;
   url: string;
 } & Body;
@@ -29,58 +29,58 @@ export type Routes = Record<
 
 export const router = {
   _routes: {} as Routes,
-  all<Path = unknown, Query = unknown, Hash = unknown>(
+  all<Path = unknown, Hash = unknown>(
     route: string,
     handler: (
-      request: Request<Path, Query, Hash>,
+      request: Request<Path, Hash>,
     ) => Response | Promise<Response>,
   ) {
     this._routes[route] = { ...(this._routes[route] ?? {}), '*': handler };
   },
-  get<Path = void, Query = void, Hash = void>(
+  get<Path = void, Hash = void>(
     route: string,
     handler: (
-      request: Request<Path, Query, Hash>,
+      request: Request<Path, Hash>,
     ) => Response | Promise<Response>,
   ) {
     this._routes[route] = { ...(this._routes[route] ?? {}), get: handler };
   },
-  post<Path = void, Query = void, Hash = void>(
+  post<Path = void, Hash = void>(
     route: string,
     handler: (
-      request: Request<Path, Query, Hash>,
+      request: Request<Path, Hash>,
     ) => Response | Promise<Response>,
   ) {
     this._routes[route] = { ...(this._routes[route] ?? {}), post: handler };
   },
-  put<Path = void, Query = void, Hash = void>(
+  put<Path = void, Hash = void>(
     route: string,
     handler: (
-      request: Request<Path, Query, Hash>,
+      request: Request<Path, Hash>,
     ) => Response | Promise<Response>,
   ) {
     this._routes[route] = { ...(this._routes[route] ?? {}), put: handler };
   },
-  delete<Path = void, Query = void, Hash = void>(
+  delete<Path = void, Hash = void>(
     route: string,
     handler: (
-      request: Request<Path, Query, Hash>,
+      request: Request<Path, Hash>,
     ) => Response | Promise<Response>,
   ) {
     this._routes[route] = { ...(this._routes[route] ?? {}), delete: handler };
   },
-  patch<Path = void, Query = void, Hash = void>(
+  patch<Path = void, Hash = void>(
     route: string,
     handler: (
-      request: Request<Path, Query, Hash>,
+      request: Request<Path, Hash>,
     ) => Response | Promise<Response>,
   ) {
     this._routes[route] = { ...(this._routes[route] ?? {}), patch: handler };
   },
-  options<Path = void, Query = void, Hash = void>(
+  options<Path = void, Hash = void>(
     route: string,
     handler: (
-      request: Request<Path, Query, Hash>,
+      request: Request<Path, Hash>,
     ) => Response | Promise<Response>,
   ) {
     this._routes[route] = {
@@ -88,10 +88,10 @@ export const router = {
       options: handler,
     };
   },
-  head<Path = void, Query = void, Hash = void>(
+  head<Path = void, Hash = void>(
     route: string,
     handler: (
-      request: Request<Path, Query, Hash>,
+      request: Request<Path, Hash>,
     ) => Response | Promise<Response>,
   ) {
     this._routes[route] = { ...(this._routes[route] ?? {}), head: handler };

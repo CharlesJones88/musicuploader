@@ -68,7 +68,7 @@ export const fileServer = {
         ...request,
         hash: match?.hash.groups,
         path: match?.pathname.groups,
-        query: match?.search.groups,
+        query: new URLSearchParams(match?.search.input),
       });
     });
   },
