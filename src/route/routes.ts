@@ -19,6 +19,7 @@ router.post<
   const hash = getHash(createHashingString(title, artist, album));
 
   if (artist == void 0 || album == void 0) {
+    console.error("Missing required query params", request.query)
     return new Response('Bad Request', { status: 400 });
   }
 
