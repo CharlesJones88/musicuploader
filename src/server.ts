@@ -1,14 +1,16 @@
 import { WebSocketServer } from 'ws';
 import config from './config.json' with { type: 'json' };
-import { Handler, Methods, Request, router } from './route/index.ts';
+import { Handler, Methods, Request } from './router/index.ts';
+import { router } from './routes/index.ts';
 import { initDB } from './db/init.ts';
 import { getSongsByTitle } from './db/song.ts';
 
 const { basePath } = config;
 
 const getFilesToSend = async (songsRequest: Array<string>) => {
+  const titleSongs = await getSongsByTitle(songsRequest);
   const filteredTitles = Object.groupBy(
-    await getSongsByTitle(songsRequest),
+    titleSongs,
     (song) => song.title,
   );
 

@@ -1,7 +1,7 @@
 import config from '../config.json' with { type: 'json' };
 import { deleteSong, getAllSongs, insertSong } from '../db/song.ts';
 import { createHashingString, getHash } from '../utils.ts';
-import { router } from './router.ts';
+import { router } from '../router/router.ts';
 
 const { basePath } = config;
 

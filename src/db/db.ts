@@ -41,7 +41,7 @@ export function allAsync<Return extends object>(
   ...params: RestBindParameters
 ) {
   try {
-    const result = db.prepare(query).all<Return>(params);
+    const result = db.prepare(query).all<Return>(...params);
     return Promise.resolve(result);
   } catch (error) {
     return Promise.reject(error);

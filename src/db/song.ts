@@ -55,8 +55,8 @@ export async function getSongsByTitle(titles: Array<string>) {
       artist, 
       album 
     FROM songs
-    WHERE title in (${titles.map(() => '?').join(',')})`,
-    titles,
+    WHERE title IN (${titles.map(() => '?').join(',')})`,
+    ...titles,
   );
 }
 
