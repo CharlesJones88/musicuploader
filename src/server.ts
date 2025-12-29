@@ -66,12 +66,13 @@ export const fileServer = {
 
       const match = pattern?.exec(url);
 
-      return handler({
-        ...request,
-        hash: match?.hash.groups,
-        path: match?.pathname.groups,
-        query: new URLSearchParams(match?.search.input),
-      });
+      const resolvedRequest = request as unknown as Request;
+      resolvedRequest.hash = match?.hash.groups;
+      resolvedRequest.path = match?.pathname.groups;
+      resolvedRequest.query = new URLSearchParams(
+        match?.search.input,
+      );
+      return handler(resolvedRequest);
     });
   },
 };
