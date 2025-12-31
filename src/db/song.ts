@@ -1,5 +1,6 @@
 import { allAsync, getAsync, runAsync } from './db.ts';
 import { Song } from '../Song.ts';
+import { logger } from '../logger/index.ts';
 
 export async function deleteSong(hash: string) {
   return await runAsync(`DELETE FROM songs WHERE hash = ?`, hash);
@@ -67,7 +68,7 @@ export async function getCount() {
     ) ?? {};
     return count;
   } catch (error) {
-    console.error('Error getting song count', error);
+    logger.error('Error getting song count', error);
     return;
   }
 }
