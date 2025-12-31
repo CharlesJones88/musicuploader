@@ -14,6 +14,12 @@ setup({
       useColors: false,
     }),
   },
+  loggers: {
+    default: {
+      level: logLevel,
+      handlers: ['json_console'],
+    },
+  },
 });
 
-export const logger = getLogger('json_console');
+export const logger = getLogger();
