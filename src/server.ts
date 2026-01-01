@@ -1,9 +1,9 @@
-import { WebSocketServer } from 'ws';
 import config from './config.json' with { type: 'json' };
 import { Handler, Methods, Request } from './router/index.ts';
 import { router } from './routes/index.ts';
 import { initDB } from './db/init.ts';
 import { getSongsByTitle } from './db/song.ts';
+import { logger } from './logger/index.ts';
 
 const { basePath } = config;
 
@@ -24,28 +24,31 @@ export const fileServer = {
     const port = Deno.env.get('PORT') ?? '8200';
     const wsPort = Deno.env.get('WS_PORT') ?? '8222';
 
-    const wss = new WebSocketServer({
+    Deno.serve({
       port: +wsPort,
-    });
+      onListen({ port }) {
+        logger.info(`WS now listening on port: ${port}`);
+      },
+    }, (request) => {
+      if (request.headers.get('upgrade') !== 'websocket') {
+        return new Response(null, { status: 426 });
+      }
 
-    wss.on('listening', () => {
-      console.info(`WS now listening on port: ${wsPort}`);
-    });
-
-    wss.on('connection', (ws) => {
-      console.info('Client connected, waiting for message.');
-      ws.addEventListener('message', async (message) => {
+      const { socket, response } = Deno.upgradeWebSocket(request);
+      logger.info('Client connected, waiting for message.');
+      socket.addEventListener('message', async (message) => {
         const songsToSend =
           (await getFilesToSend(JSON.parse(message.data.toString()))) ?? [];
-        console.info(`${songsToSend.length} songs missing from server`);
-        ws.send(JSON.stringify(songsToSend));
+        logger.info(`${songsToSend.length} songs missing from server`);
+        socket.send(JSON.stringify(songsToSend));
       });
+      return response;
     });
 
     Deno.serve({
       port: +port,
       onListen({ port }) {
-        console.info(`Now listening on port: ${port}`);
+        logger.info(`Now listening on port: ${port}`);
       },
     }, (request) => {
       const url = new URL(request.url);
